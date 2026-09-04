@@ -430,29 +430,22 @@ def populate_sheet1_win32(wb, sample_name: str, plate_number: str):
         raise
 
 
-def get_control_selection(target1_name: str = 'ICR1', target2_name: str = 'ICR2', assay_type: str = 'BWS'):
+def get_control_selection(available_controls: list, target1_name: str = 'ICR1', target2_name: str = 'ICR2'):
     """
     Prompt user to select 3 controls for each target.
 
     Args:
+        available_controls: Control sample names found on the plate, in plate order
         target1_name: Name of first target (e.g., 'ICR1' or 'PEG1')
         target2_name: Name of second target (e.g., 'ICR2' or 'GRB')
-        assay_type: Type of assay ('BWS' or 'RSS')
 
     Returns:
         Tuple of (target1_controls, target2_controls) where each is a list of 3 control names
     """
-    # BWS assays have 6 controls (A-F), RSS assays have 8 controls (A-H)
-    if assay_type == 'RSS':
-        available_controls = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
-        controls_display = "A, B, C, D, E, F, G, H"
-    else:  # BWS or default
-        available_controls = ['A', 'B', 'C', 'D', 'E', 'F']
-        controls_display = "A, B, C, D, E, F"
+    controls_display = ", ".join(f"{i}. {name}" for i, name in enumerate(available_controls, 1))
 
     print("\nControl Selection")
     print("=" * 80)
-    print(f"Assay Type: {assay_type}")
     print(f"Available controls: {controls_display}")
     print(f"You need to select 3 controls for {target1_name} and 3 controls for {target2_name}.")
     print()
@@ -462,12 +455,12 @@ def get_control_selection(target1_name: str = 'ICR1', target2_name: str = 'ICR2'
     target1_controls = []
     for i in range(3):
         while True:
-            control = input(f"  Select control {i+1} for {target1_name} ({controls_display}): ").strip().upper()
-            if control in available_controls:
-                target1_controls.append(f"Control {control}")
+            control = input(f"  Select control {i+1} for {target1_name} (1-{len(available_controls)}): ").strip()
+            if control.isdigit() and 1 <= int(control) <= len(available_controls):
+                target1_controls.append(available_controls[int(control) - 1])
                 break
             else:
-                print(f"    Invalid input. Please enter one of: {controls_display}")
+                print(f"    Invalid input. Please enter a number 1-{len(available_controls)}")
 
     print()
 
@@ -476,12 +469,12 @@ def get_control_selection(target1_name: str = 'ICR1', target2_name: str = 'ICR2'
     target2_controls = []
     for i in range(3):
         while True:
-            control = input(f"  Select control {i+1} for {target2_name} ({controls_display}): ").strip().upper()
-            if control in available_controls:
-                target2_controls.append(f"Control {control}")
+            control = input(f"  Select control {i+1} for {target2_name} (1-{len(available_controls)}): ").strip()
+            if control.isdigit() and 1 <= int(control) <= len(available_controls):
+                target2_controls.append(available_controls[int(control) - 1])
                 break
             else:
-                print(f"    Invalid input. Please enter one of: {controls_display}")
+                print(f"    Invalid input. Please enter a number 1-{len(available_controls)}")
 
     print()
     print(f"{target1_name} controls selected: {', '.join(target1_controls)}")
@@ -689,7 +682,8 @@ if __name__ == '__main__':
     print()
 
     # Get user input for controls
-    icr1_controls, icr2_controls = get_control_selection()
+    control_samples = sorted({s for s in parse_qpcr_csv(icr1_file)["Sample"] if 'control' in str(s).lower()})
+    icr1_controls, icr2_controls = get_control_selection(control_samples)
     print()
 
     generate_report_win32(icr1_file, icr2_file, template_file, output_file, sample_name,

@@ -273,9 +273,12 @@ def main():
         all_samples = get_all_samples(target1_data, target2_data)
         print(f"\nFound {len(all_samples)} unique samples")
 
+        # Controls are recognised by the word "control" anywhere in the name
+        control_samples = [s for s in all_samples if 'control' in s.lower()]
+
         # Filter out control samples and NTC for the sample list
         positive_control = load_settings()["positive_control"]
-        test_samples = [s for s in all_samples if not s.startswith('Control ')
+        test_samples = [s for s in all_samples if s not in control_samples
                        and s != positive_control and s != 'NTC']
 
         print(f"Test samples available: {len(test_samples)}")
@@ -335,7 +338,12 @@ def main():
 
     # Get control selections
     print()
-    target1_controls, target2_controls = get_control_selection(target1_name, target2_name, assay_type)
+    if len(control_samples) < 3:
+        print(f"Error: found {len(control_samples)} control samples on the plate, need at least 3.")
+        print("Control samples are identified by the word 'control' in the sample name.")
+        sys.exit(1)
+
+    target1_controls, target2_controls = get_control_selection(control_samples, target1_name, target2_name)
 
     # Extract plate information for filename
     plate_number, date_mmddyy, initials = extract_plate_info(target1_file_sorted.name)
