@@ -1,48 +1,48 @@
-# Methylation Tools
+# Methylation QS6 Analysis & Report Generation
 
 Command line tools for qPCR methylation data. Two workflows:
 
 - **analysis**: reads a raw export, flags outlier wells to omit, picks controls and a reference sample per target.
 - **report**: reads two target exports, fills an Excel template, runs its macros, and writes one `.xlsm` report per sample.
 
-## Requirements
-
-| | analysis | report |
-|---|---|---|
-| 64-bit Windows | yes | yes |
-| Desktop Microsoft Excel | no | yes |
-
-The report drives Excel through COM automation and runs VBA macros in the template. Excel Online will not work.
+The report drives Excel through COM automation and runs VBA macros in the template.
 
 ## Install
 
-No Python needed. Copy three files to the target machine:
+No Python needed. Copy to the target machine:
 
-1. `methyl.exe`
-2. `qs6_bws_template.xlsm`
-3. `qs6_rss_template.xlsm`
+1. The `methyl` folder, containing `methyl.exe` and `_internal`
+2. `qs6_bws_template.xlsm` (see `/templates`)
+3. `qs6_rss_template.xlsm` (see `/templates`)
 
-The templates are not bundled in the exe. They are referenced by path, so they must be copied separately.
+Keep the folder together. `methyl.exe` will not run without `_internal` beside it.
 
-Put `methyl.exe` anywhere, for example `%LOCALAPPDATA%\Programs\methyl\`. Its location does not matter, because settings are stored in your home folder.
+Put the folder anywhere, for example `C:\methyl`. Its location does not matter, because settings are stored in your home folder.
 
-If the templates arrived by email or download, right-click each one, open Properties, and click **Unblock**. Otherwise Excel opens them read-only and the macros will not run.
+## Two ways to use it
+
+**Double-click `methyl.exe`** for a menu of the common tasks. Nothing to set up, and the tool stays open between tasks.
+
+**Or type commands** in PowerShell, as described below. This needs the PATH step or a full path to the exe.
 
 ### Optional: run `methyl` from any folder
 
-Without this you must use the full path to the exe. Run once in PowerShell, then open a new terminal:
+Without this you must use the full path to the exe. Set `$dir` to the folder holding `methyl.exe`, run once in PowerShell, then open a new terminal:
 
 ```powershell
-$dir = "$env:LOCALAPPDATA\Programs\methyl"
+$dir = "C:\Path\To\Folder"
+# For example, if you save methyl.exe in a folder called "MyName" in Local Disk (C:), the path would be "C:\MyName"
 $p = [Environment]::GetEnvironmentVariable("Path","User")
 if ($p -notlike "*$dir*") {
   [Environment]::SetEnvironmentVariable("Path", "$p;$dir", "User")
 }
 ```
+After setting the path, close the current PowerShell window and open a new one.
+If you choose not to do this set up, in PowerShell, navigate to the folder containing the script and run `./methyl`
 
 ## First run
 
-Point the tool at the templates:
+Set the report templates. From the menu, use options 3 and 4. Or by command:
 
 ```
 methyl config set-template bws
@@ -67,11 +67,11 @@ Both `run` commands are interactive. They open a file picker, then prompt in the
 
 ### analysis run
 
-Select one raw export. Prints the wells to omit, the three selected controls, and the reference sample for each target.
+Select one raw export (includes all wells and all targets). Prints the wells to omit, the three selected controls, and the reference sample for each target.
 
 ### report run
 
-Select the two target exports, then the destination folder. Assay type comes from the filename: `BWS...` uses targets ICR1 and ICR2, `RSS...` uses PEG1 and GRB.
+Select the two target exports (export from QuantStudio for each target after omitting wells), then the destination folder. Assay type comes from the filename: `BWS...` uses targets ICR1 and ICR2, `RSS...` uses PEG1 and GRB. It doesn't matter if you pick ICR1 or ICR2 first (similarly, PEG1 and GRB) when prompted to select the exports.
 
 You then choose to process all samples or one, and pick three controls for each target. Controls are any sample with "control" in its name. At least three must be on the plate.
 
@@ -100,8 +100,8 @@ Macros were blocked. The console shows `Failed to execute 'Transfer_stepOne_to_R
 **"No BWS template has been set"**
 Run `methyl config set-template bws`.
 
-**First launch is slow**
-Expected. The exe unpacks to a temp folder on each run.
+**"No module named analysis"**
+You are running the venv shim, not the exe. Run `deactivate`, or call the exe by its full path.
 
 ## Development
 
@@ -126,7 +126,7 @@ Layout:
 | `core/` | Shared qPCR export reader |
 | `analysis/` | Outlier detection and control selection |
 | `report/` | Excel report generation via COM |
-| `methyl.py` | PyInstaller entry script |
+| `methyl.py` | PyInstaller entry script and double-click menu |
 | `methyl.spec` | PyInstaller build config |
 
 ## Building the executable
@@ -136,6 +136,4 @@ Layout:
 .venv\Scripts\python -m PyInstaller --noconfirm --clean methyl.spec
 ```
 
-Produces `dist/methyl.exe`, a single 64-bit file of about 34 MB. Build on 64-bit Windows, since the result is architecture specific. PyInstaller is a build tool only and is not listed in `pyproject.toml` dependencies.
-
-To trade the single file for faster startup, replace `EXE(...)` in `methyl.spec` with a `COLLECT` step to produce a folder instead.
+Produces `dist/methyl/`, a 64-bit folder of about 77 MB. Ship the whole folder, zipped. Build on 64-bit Windows, since the result is architecture specific. PyInstaller is a build tool only and is not listed in `pyproject.toml` dependencies.

@@ -12,9 +12,16 @@ pyz = PYZ(a.pure)
 exe = EXE(
     pyz,
     a.scripts,
-    a.binaries,
-    a.datas,
+    exclude_binaries=True,
     name="methyl",
     console=True,
     upx=False,
+)
+
+# A folder build, not onefile: nothing is unpacked to temp on each launch
+coll = COLLECT(
+    exe,
+    a.binaries,
+    a.datas,
+    name="methyl",
 )
