@@ -1,6 +1,6 @@
 import statistics
 from collections import defaultdict
-from config import GLOBAL_STD_THRESHOLD
+from analysis.config import GLOBAL_STD_THRESHOLD
 
 class Helper:
             

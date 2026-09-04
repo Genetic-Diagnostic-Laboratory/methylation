@@ -1,15 +1,9 @@
-import json
-from pathlib import Path
-
 # Re-exported so the processor keeps one source of truth with the shared parser
 from core.parser import UNDETERMINED_CQ
+from cli.settings import load_settings
 
 GLOBAL_STD_THRESHOLD = 0.17
 GLOBAL_RQ_DIFF_THRESHOLD = 0.2
-
-# Written by `methyl config set-positive-control`, kept at the repo root
-SETTINGS_FILE = Path(__file__).resolve().parent.parent / ".methylation_config.json"
-DEFAULT_POSITIVE_CONTROL = "HCT116"
 
 
 def get_positive_control():
@@ -22,11 +16,4 @@ def get_positive_control():
     Returns:
         name (str): the saved sample name, or the default if none has been set
     """
-    if SETTINGS_FILE.exists():
-        try:
-            with open(SETTINGS_FILE) as f:
-                return json.load(f).get("positive_control", DEFAULT_POSITIVE_CONTROL)
-        except (json.JSONDecodeError, OSError):
-            pass
-
-    return DEFAULT_POSITIVE_CONTROL
+    return load_settings()["positive_control"]

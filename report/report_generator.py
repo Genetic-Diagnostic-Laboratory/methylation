@@ -7,7 +7,7 @@ import re
 from pathlib import Path
 from typing import Dict, Tuple
 from datetime import datetime
-from data_parser import parse_qpcr_csv, extract_sample_data
+from report.data_parser import parse_qpcr_csv, extract_sample_data
 from cli.settings import load_settings
 
 

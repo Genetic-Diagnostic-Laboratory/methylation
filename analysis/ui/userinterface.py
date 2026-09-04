@@ -1,4 +1,4 @@
-from processor.processor import Processor
+from analysis.processor.processor import Processor
 
 class UserInterface:
     def __init__(self, processor:Processor):

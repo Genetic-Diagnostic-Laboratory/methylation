@@ -1,11 +1,6 @@
-import sys
-import subprocess
-from pathlib import Path
-
 import click
 
-
-_ANALYSIS_DIR = Path(__file__).resolve().parent.parent.parent / "analysis"
+from analysis.main import main as analysis_main
 
 
 @click.group()
@@ -17,5 +12,4 @@ def analysis():
 @analysis.command("run")
 def analysis_run():
     """Launch the interactive analysis tool."""
-    result = subprocess.run([sys.executable, "main.py"], cwd=_ANALYSIS_DIR)
-    sys.exit(result.returncode)
+    analysis_main()

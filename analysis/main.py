@@ -1,7 +1,7 @@
-from ui.userinterface import UserInterface
-from ui.browsefiles import Browser
-from datamanagement.da_parser import DAParser
-from processor.processor import Processor
+from analysis.ui.userinterface import UserInterface
+from analysis.ui.browsefiles import Browser
+from analysis.datamanagement.da_parser import DAParser
+from analysis.processor.processor import Processor
 
 def main():
 

@@ -1,8 +1,9 @@
 import json
 from pathlib import Path
 
-# Shared with the analysis and report scripts, so it lives at the repo root
-CONFIG_FILE = Path(__file__).resolve().parent.parent / ".methylation_config.json"
+# Kept in the user's home directory rather than beside the code: once frozen with
+# PyInstaller the code lives in a temporary directory that is wiped on exit
+CONFIG_FILE = Path.home() / ".methylation_config.json"
 
 DEFAULTS = {
     "positive_control": "HCT116",

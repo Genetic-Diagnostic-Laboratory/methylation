@@ -1,9 +1,9 @@
 import pandas as pd
 import statistics
-from datamanagement.da_parser import DAParser
-from util.util import Helper
+from analysis.datamanagement.da_parser import DAParser
+from analysis.util.util import Helper
 from collections import defaultdict
-from config import GLOBAL_RQ_DIFF_THRESHOLD, GLOBAL_STD_THRESHOLD, UNDETERMINED_CQ, get_positive_control
+from analysis.config import GLOBAL_RQ_DIFF_THRESHOLD, GLOBAL_STD_THRESHOLD, UNDETERMINED_CQ, get_positive_control
 
 class Processor:
     def __init__(self, parser:DAParser):

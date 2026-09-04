@@ -3,3 +3,5 @@
 __pycache__/
 *.pyc
 .methylation_config.json
+build/
+dist/

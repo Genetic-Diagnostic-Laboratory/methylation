@@ -1,6 +1,6 @@
 import pandas as pd
 import unittest
-from processor.processor import Target
+from analysis.processor.processor import Target
 
 class TestTarget(unittest.TestCase):
     def setUp(self):

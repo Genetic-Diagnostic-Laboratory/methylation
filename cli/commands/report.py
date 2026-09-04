@@ -1,11 +1,6 @@
-import sys
-import subprocess
-from pathlib import Path
-
 import click
 
-
-_REPORT_DIR = Path(__file__).resolve().parent.parent.parent / "report"
+from report.main import main as report_main
 
 
 @click.group()
@@ -17,5 +12,4 @@ def report():
 @report.command("run")
 def report_run():
     """Launch the methylation report generator."""
-    result = subprocess.run([sys.executable, "main.py"], cwd=_REPORT_DIR)
-    sys.exit(result.returncode)
+    report_main()

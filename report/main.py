@@ -8,8 +8,8 @@ import tkinter as tk
 from tkinter import filedialog
 from pathlib import Path
 import sys
-from data_parser import parse_qpcr_csv, get_all_samples
-from report_generator import generate_report_win32, get_control_selection, extract_plate_info
+from report.data_parser import parse_qpcr_csv, get_all_samples
+from report.report_generator import generate_report_win32, get_control_selection, extract_plate_info
 from cli.settings import load_settings, save_setting
 
 
